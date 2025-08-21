@@ -1,5 +1,7 @@
+library(forcats)
+library(dplyr)
 getwd()
-df<-read.csv('/home/pikubha/r-projects/Spotify-Product-Analysis/data.csv');
+df<-read.csv("D:/rproject/Spotify-Product-Analysis/Spotify analysis/data.csv");
 
 # Convert Age into factor with proper order
 df$Age <- factor(df$Age, 
@@ -48,6 +50,18 @@ df$How.many.hours.per.day.do.you.listen.to.music. <- factor(df$How.many.hours.pe
 # Convert factor to numeric
 df$How.many.hours.per.day.do.you.listen.to.music. <- as.numeric(as.character(df$How.many.hours.per.day.do.you.listen.to.music.))
 
+unique(df$Your.favorite.time.to.listen.to.music.)
+
+df$Your.favorite.time.to.listen.to.music. <- factor(df$Your.favorite.time.to.listen.to.music.)
+df$Your.favorite.time.to.listen.to.music. <- fct_collapse(
+  df$Your.favorite.time.to.listen.to.music.,
+  "0" = c("While commuting", "Travelling ", "While Driving"),
+  "1" = c("While studying", "At work", "While written ", "While doing shit like writing lab "),
+  "2" = c("Before sleep", "During workouts", "before sleep and during workouts"),
+  "3" = c("Preferably, Always ", "all the time", "Anytime", "Music"),
+  "4" = c("Depends on my mood"),
+  "5" = c("I prefer having a separate time allocated for listening to music")
+)
 
 # Check unique values first (to confirm all categories)
 unique(df$Do.you.pay.for.your.preferred.music.platform.)
@@ -124,4 +138,19 @@ View(df)
 cat("Encoding 'Influence.on.spending' column...\n")
 influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the.most."
 df[[influence_col_name]] <- as.numeric(as.factor(df[[influence_col_name]]))
+View(df)
+
+unique(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
+df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world. <- factor(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
+df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world. <- fct_collapse(
+  df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.,
+  "0" = c("", "na", "No"),
+  "1" = c("Private", "Private ", "It is my commodity ", "Private. But it shouldn't be."),
+  "2" = c("Public", "public", "Public ", "Public Commodity ", "Public commodity", "Yes", "Absolutely yes. People nowadays should attend. It's important to build up a community.",
+          "It should be made public", "According to me music is a public commodity in today's digital world .",
+          "Public commodity. Also Spotify. Stop paying for your Spotify subscription. "),
+  "3" = c("Both", "Both based on context ", "Public private according to the surrounding ")
+)
+
+df <- df[, -c(1, 17, 32)]
 View(df)
