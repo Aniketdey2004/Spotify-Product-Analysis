@@ -623,13 +623,15 @@ df <- df %>%
     Willingness_To_Pay = If.Spotify.raised.Premium.from...119.to...199.month..would.you.still.pay.,
     Current_Payment = Do.you.pay.for.your.preferred.music.platform.,
     Leisure_Budget = What.is.your.monthly.budget.for.leisure.or.entertainment..Rs.,
-    Music_Budget_Proportion = What.proportion.of.your.entertainment.budget.goes.to.music.related.spending.,
     Spending_Influence = What.influences.your.decision.to.spend.money.on.music.the.most.,
     Artist_Compensation = Rate.how.fairly.you.think.streaming.platforms.compensate.artists...1.very.bad..5.very.good.,
     Concert_VS_Headphones = You.have...1000..Would.you.attend.a.concert.or.buy.new.headphones.,
-    Area_of_Residence = Area.of.residence,
-    Favorite_Listening_Time = Your.favorite.time.to.listen.to.music.,
-    Daily_Listening_Hours = How.many.hours.per.day.do.you.listen.to.music.
+    Music_Commodity_View = Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.,
+    Emotional_Impact = Rate.yourself.on.the.following.statements..Music.affects.my.emotional.state.easily.,
+    Daily_Listening_Hours = How.many.hours.per.day.do.you.listen.to.music.,
+    Age_Numeric = as.numeric(as.character(Age)),
+    Education_Level = Education.level,
+    Area_of_Residence = Area.of.residence
   )
 
 response_colors <- c("1" = "red", "2" = "orange", "3" = "lightblue", "4" = "green")
@@ -939,3 +941,227 @@ combo9_plot <- plot_ly(
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
 combo9_plot
+
+combo10_data <- df %>%
+  count(Music_Commodity_View, Artist_Compensation, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Artist_Compensation) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Artist_Compensation))
+
+combo10_plot <- plot_ly(
+  data = combo10_data,
+  x = ~Artist_Compensation,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Compensation Rating:", Artist_Compensation,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Core Psychology: Commodity View vs Artist Compensation",
+    xaxis = list(title = "Artist Compensation Fairness (1-5)"),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo10_plot
+
+combo12_data <- df %>%
+  count(Music_Commodity_View, Current_Payment, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Current_Payment) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Current_Payment))
+
+combo12_plot <- plot_ly(
+  data = combo12_data,
+  x = ~Current_Payment,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Current Payment:", Current_Payment,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Belief vs Action: Commodity View vs Current Payment Behavior",
+    xaxis = list(title = "Current Payment Status", tickangle = -45),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo12_plot
+
+combo13_data <- df %>%
+  count(Music_Commodity_View, Leisure_Budget, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Leisure_Budget) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Leisure_Budget))
+
+combo13_plot <- plot_ly(
+  data = combo13_data,
+  x = ~Leisure_Budget,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Budget:", Leisure_Budget,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Principle vs Means: Commodity View by Financial Capacity",
+    xaxis = list(title = "Monthly Leisure Budget (₹)"),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo13_plot
+
+combo14_data <- df %>%
+  count(Music_Commodity_View, Spending_Influence, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Spending_Influence) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Spending_Influence))
+
+combo14_plot <- plot_ly(
+  data = combo14_data,
+  x = ~Spending_Influence,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Spending Influence:", Spending_Influence,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Psychology: Commodity View vs Spending Drivers",
+    xaxis = list(title = "Primary Spending Influence", tickangle = -45),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo14_plot
+
+combo15_data <- df %>%
+  count(Music_Commodity_View, Concert_VS_Headphones, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Concert_VS_Headphones) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Concert_VS_Headphones))
+
+combo15_plot <- plot_ly(
+  data = combo15_data,
+  x = ~Concert_VS_Headphones,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Concert vs Headphones:", Concert_VS_Headphones,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Experience vs Product: Commodity View by Spending Choice",
+    xaxis = list(title = "₹1000 Spending Choice", tickangle = -45),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo15_plot
+
+combo16_data <- df %>%
+  count(Music_Commodity_View, Emotional_Impact, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Emotional_Impact) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Emotional_Impact))
+
+combo16_plot <- plot_ly(
+  data = combo7_data,
+  x = ~Emotional_Impact,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Emotional Impact:", Emotional_Impact,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Emotional Value: Commodity View vs Emotional Connection",
+    xaxis = list(title = "Emotional Impact Rating (1-5)"),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo16_plot
+
+combo17_data <- df %>%
+  count(Music_Commodity_View, Area_of_Residence, Willingness_To_Pay) %>%
+  group_by(Music_Commodity_View, Area_of_Residence) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  ungroup() %>%
+  filter(!is.na(Music_Commodity_View), !is.na(Area_of_Residence))
+
+combo17_plot <- plot_ly(
+  data = combo17_data,
+  x = ~Area_of_Residence,
+  y = ~Percentage,
+  color = ~Willingness_To_Pay,
+  colors = response_colors,
+  type = 'bar',
+  text = ~paste("Commodity View:", Music_Commodity_View,
+                "<br>Residence:", Area_of_Residence,
+                "<br>Response:", Willingness_To_Pay,
+                "<br>Count:", n,
+                "<br>Percentage:", round(Percentage, 1), "%"),
+  hovertemplate = "%{text}<extra></extra>",
+  frame = ~Music_Commodity_View
+) %>%
+  layout(
+    title = "Geographic Culture: Commodity View by Area of Residence",
+    xaxis = list(title = "Area of Residence", tickangle = -45),
+    yaxis = list(title = "Percentage within Group", range = c(0, 100)),
+    barmode = "stack"
+  ) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE)
+
+combo17_plot
