@@ -1,4 +1,5 @@
-df<-read.csv('./../data.csv');
+getwd()
+df<-read.csv('/home/pikubha/r-projects/Spotify-Product-Analysis/data.csv');
 
 # Convert Age into factor with proper order
 df$Age <- factor(df$Age, 
@@ -108,3 +109,19 @@ df$What.proportion.of.your.entertainment.budget.goes.to.music.related.spending. 
 cat("Encoding 'Monthly.budget' column...\n")
 budget_levels <- c("None", "0-199", "200-499", "500-1000", "More than 1000")
 df$What.is.your.monthly.budget.for.leisure.or.entertainment..Rs. <- as.numeric(factor(df$What.is.your.monthly.budget.for.leisure.or.entertainment..Rs., levels=budget_levels,ordered = TRUE))
+
+cat("Encoding 'Spotify.raised.Premium' column...\n")
+spotify_levels <- c("No", "I use free platforms anyway", "Yes but reluctantly", "Yes, happily")
+spotify_col_name <- "If.Spotify.raised.Premium.from...119.to...199.month..would.you.still.pay."
+df[[spotify_col_name]] <- as.numeric(factor(df[[spotify_col_name]], levels = spotify_levels, ordered = TRUE))
+View(df)
+
+cat("Encoding 'Concert.or.headphones' column...\n")
+concert_col_name <- "You.have...1000..Would.you.attend.a.concert.or.buy.new.headphones."
+df[[concert_col_name]] <- as.numeric(as.factor(df[[concert_col_name]]))
+View(df)
+
+cat("Encoding 'Influence.on.spending' column...\n")
+influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the.most."
+df[[influence_col_name]] <- as.numeric(as.factor(df[[influence_col_name]]))
+View(df)
