@@ -148,15 +148,34 @@ spotify_col_name <- "If.Spotify.raised.Premium.from...119.to...199.month..would.
 df[[spotify_col_name]] <- as.numeric(factor(df[[spotify_col_name]], levels = spotify_levels, ordered = TRUE))
 View(df)
 
+# cat("Encoding 'Concert.or.headphones' column...\n")
+# concert_col_name <- "You.have...1000..Would.you.attend.a.concert.or.buy.new.headphones."
+# concert_levels <- c()
+# df[[concert_col_name]] <- as.numeric(as.factor(df[[concert_col_name]]))
+# View(df)
+#
+# cat("Encoding 'Influence.on.spending' column...\n")
+# influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the.most."
+# df[[influence_col_name]] <- as.numeric(as.factor(df[[influence_col_name]]))
+# View(df)
+
 cat("Encoding 'Concert.or.headphones' column...\n")
 concert_col_name <- "You.have...1000..Would.you.attend.a.concert.or.buy.new.headphones."
-df[[concert_col_name]] <- as.numeric(as.factor(df[[concert_col_name]]))
+concert_levels <- c("Save the money", "Depends on the artist/band", "Buy headphones", "Attend the concert")
+cat("--> Mapping for 'Concert.or.headphones':\n")
+print(data.frame(Level = concert_levels, Code = 1:length(concert_levels)))
+df[[concert_col_name]] <- as.numeric(factor(df[[concert_col_name]], levels = concert_levels, ordered = TRUE))
 View(df)
 
 cat("Encoding 'Influence.on.spending' column...\n")
 influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the.most."
-df[[influence_col_name]] <- as.numeric(as.factor(df[[influence_col_name]]))
-View(df)
+influence_factor <- as.factor(df_encoded[[influence_col_name]])
+cat("--> Mapping for 'Influence.on.spending':\n")
+print(data.frame(Level = levels(influence_factor), Code = 1:length(levels(influence_factor))))
+df_encoded[[influence_col_name]] <- as.numeric(influence_factor)
+
+
+### changed
 
 unique(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
 df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world. <- factor(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
