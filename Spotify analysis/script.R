@@ -172,7 +172,7 @@ influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the
 influence_factor <- as.factor(df_encoded[[influence_col_name]])
 cat("--> Mapping for 'Influence.on.spending':\n")
 print(data.frame(Level = levels(influence_factor), Code = 1:length(levels(influence_factor))))
-df_encoded[[influence_col_name]] <- as.numeric(influence_factor)
+df[[influence_col_name]] <- as.numeric(influence_factor)
 
 
 ### changed
