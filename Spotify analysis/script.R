@@ -3,12 +3,13 @@ library(dplyr)
 library(corrplot)
 library(plotly)
 library(tidyr)
+library(caret)
 getwd()
-df<-read.csv("/home/pikubha/r-projects/Spotify-Product-Analysis/Spotify analysis/data.csv");
+df<-read.csv("D:/rproject/Spotify-Product-Analysis/Spotify analysis/data.csv");
 
 # Convert Age into factor with proper order
 df$Age <- factor(df$Age, 
-                 levels = c("15-20", "21-30", "31-40", "Above 40"), 
+                 levels = c("14-20", "21-30", "31-40", "Above 40"), 
                  labels = c(0, 1, 2, 3))
 
 # Convert factor to numeric (if you want integer encoding)
@@ -32,7 +33,7 @@ df$Area.of.residence <- factor(df$Area.of.residence,
 df$Area.of.residence <- as.numeric(as.character(df$Area.of.residence))
 
 df$Education.level <- factor(df$Education.level,
-                             levels = c("School (class 10-12)", 
+                             levels = c("School (class 10-11)", 
                                         "Undergraduate", 
                                         "Postgraduate", 
                                         "Working Professional", 
@@ -76,9 +77,9 @@ df$Your.favorite.time.to.listen.to.music. <- factor(
   labels = c(0, 0, 0,  # Levels 1-3 -> Label 0
              1, 1, 1, 1, # Levels 4-7 -> Label 1
              2, 2, 2,    # Levels 8-10 -> Label 2
-             3, 3, 3, 3, # Levels 11-14 -> Label 3
-             4,          # Level 15 -> Label 4
-             5)          # Level 16 -> Label 5
+             3, 3, 3, 3, # Levels 11-13 -> Label 3
+             4,          # Level 14 -> Label 4
+             5)          # Level 15 -> Label 5
 )
 
 # Check unique values first (to confirm all categories)
@@ -192,17 +193,16 @@ df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.
   "3" = c("Both", "Both based on context ", "Public private according to the surrounding ")
 )
 
-df <- df[, -c(1, 17, 32)]
+df <- df[, -c(1, 16, 32)]
 View(df)
 
 df_numeric <- as.data.frame(lapply(df, function(x) {
   as.numeric(as.character(x))
 }))
 
-# Now calculate correlation
+
 cor_matrix <- cor(df_numeric, use = "complete.obs")
 
-# Basic heatmap
 heatmap(cor_matrix, 
         col = colorRampPalette(c("blue", "white", "red"))(100),
         symm = TRUE)
@@ -649,8 +649,10 @@ df <- df %>%
     Artist_Compensation = Rate.how.fairly.you.think.streaming.platforms.compensate.artists...1.very.bad..5.very.good.,
     Concert_VS_Headphones = You.have...1000..Would.you.attend.a.concert.or.buy.new.headphones.,
     Music_Commodity_View = Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.,
+    Music_Budget_Proportion = What.proportion.of.your.entertainment.budget.goes.to.music.related.spending.,
     Emotional_Impact = Rate.yourself.on.the.following.statements..Music.affects.my.emotional.state.easily.,
     Daily_Listening_Hours = How.many.hours.per.day.do.you.listen.to.music.,
+    Favorite_Listening_Time = Your.favorite.time.to.listen.to.music.,
     Age_Numeric = as.numeric(as.character(Age)),
     Education_Level = Education.level,
     Area_of_Residence = Area.of.residence
@@ -996,15 +998,15 @@ combo10_plot <- plot_ly(
 
 combo10_plot
 
-combo12_data <- df %>%
+combo11_data <- df %>%
   count(Music_Commodity_View, Current_Payment, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Current_Payment) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Current_Payment))
 
-combo12_plot <- plot_ly(
-  data = combo12_data,
+combo11_plot <- plot_ly(
+  data = combo11_data,
   x = ~Current_Payment,
   y = ~Percentage,
   color = ~Willingness_To_Pay,
@@ -1026,17 +1028,17 @@ combo12_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo12_plot
+combo11_plot
 
-combo13_data <- df %>%
+combo12_data <- df %>%
   count(Music_Commodity_View, Leisure_Budget, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Leisure_Budget) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Leisure_Budget))
 
-combo13_plot <- plot_ly(
-  data = combo13_data,
+combo12_plot <- plot_ly(
+  data = combo12_data,
   x = ~Leisure_Budget,
   y = ~Percentage,
   color = ~Willingness_To_Pay,
@@ -1058,17 +1060,17 @@ combo13_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo13_plot
+combo12_plot
 
-combo14_data <- df %>%
+combo13_data <- df %>%
   count(Music_Commodity_View, Spending_Influence, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Spending_Influence) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Spending_Influence))
 
-combo14_plot <- plot_ly(
-  data = combo14_data,
+combo13_plot <- plot_ly(
+  data = combo13_data,
   x = ~Spending_Influence,
   y = ~Percentage,
   color = ~Willingness_To_Pay,
@@ -1090,17 +1092,17 @@ combo14_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo14_plot
+combo13_plot
 
-combo15_data <- df %>%
+combo14_data <- df %>%
   count(Music_Commodity_View, Concert_VS_Headphones, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Concert_VS_Headphones) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Concert_VS_Headphones))
 
-combo15_plot <- plot_ly(
-  data = combo15_data,
+combo14_plot <- plot_ly(
+  data = combo14_data,
   x = ~Concert_VS_Headphones,
   y = ~Percentage,
   color = ~Willingness_To_Pay,
@@ -1122,16 +1124,16 @@ combo15_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo15_plot
+combo14_plot
 
-combo16_data <- df %>%
+combo15_data <- df %>%
   count(Music_Commodity_View, Emotional_Impact, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Emotional_Impact) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Emotional_Impact))
 
-combo16_plot <- plot_ly(
+combo15_plot <- plot_ly(
   data = combo7_data,
   x = ~Emotional_Impact,
   y = ~Percentage,
@@ -1154,17 +1156,17 @@ combo16_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo16_plot
+combo15_plot
 
-combo17_data <- df %>%
+combo16_data <- df %>%
   count(Music_Commodity_View, Area_of_Residence, Willingness_To_Pay) %>%
   group_by(Music_Commodity_View, Area_of_Residence) %>%
   mutate(Percentage = n / sum(n) * 100) %>%
   ungroup() %>%
   filter(!is.na(Music_Commodity_View), !is.na(Area_of_Residence))
 
-combo17_plot <- plot_ly(
-  data = combo17_data,
+combo16_plot <- plot_ly(
+  data = combo16_data,
   x = ~Area_of_Residence,
   y = ~Percentage,
   color = ~Willingness_To_Pay,
@@ -1186,4 +1188,233 @@ combo17_plot <- plot_ly(
   ) %>%
   animation_opts(1000, easing = "elastic", redraw = FALSE)
 
-combo17_plot
+combo16_plot
+
+cat("=== OVERALL WILLINGNESS TO PAY ===\n")
+willingness_summary <- df %>%
+  count(Willingness_To_Pay) %>%
+  mutate(Percentage = n / sum(n) * 100,
+         Label = response_labels[Willingness_To_Pay])
+print(willingness_summary[, c("Label", "n", "Percentage")])
+cat("\n")
+
+cat("=== CURRENT PAYMENT BEHAVIOR ===\n")
+payment_analysis <- df %>%
+  group_by(Current_Payment) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Yes_Rate = mean(Willingness_To_Pay == "4"),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(payment_analysis)
+cat("\n")
+
+cat("=== LEISURE BUDGET ANALYSIS ===\n")
+budget_analysis <- df %>%
+  group_by(Leisure_Budget) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Avg_Artist_Compensation = mean(as.numeric(Artist_Compensation), na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(budget_analysis)
+cat("\n")
+
+cat("=== MUSIC COMMODITY VIEW ANALYSIS ===\n")
+commodity_analysis <- df %>%
+  group_by(Music_Commodity_View) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Avg_Budget = mean(as.numeric(gsub("[^0-9]", "", Leisure_Budget)), na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(commodity_analysis)
+cat("\n")
+
+cat("=== ARTIST COMPENSATION BELIEFS ===\n")
+compensation_analysis <- df %>%
+  group_by(Artist_Compensation) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Private_Commodity_Rate = mean(Music_Commodity_View == "Private", na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(compensation_analysis)
+cat("\n")
+
+cat("=== SPENDING DECISION DRIVERS ===\n")
+spending_influence_analysis <- df %>%
+  group_by(Spending_Influence) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Current_Payment_Rate = mean(Current_Payment == "Yes", na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(spending_influence_analysis)
+cat("\n")
+
+cat("=== MUSIC ENGAGEMENT ANALYSIS ===\n")
+engagement_analysis <- df %>%
+  group_by(Daily_Listening_Hours) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Emotional_Impact_Avg = mean(as.numeric(Emotional_Impact), na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(engagement_analysis)
+cat("\n")
+
+cat("=== EXPERIENCE VS PRODUCT PREFERENCE ===\n")
+concert_analysis <- df %>%
+  group_by(Concert_VS_Headphones) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    High_Budget_Rate = mean(Leisure_Budget %in% c("2000-5000", "5000+"), na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(concert_analysis)
+cat("\n")
+
+cat("=== AGE ANALYSIS ===\n")
+age_analysis <- df %>%
+  mutate(Age_Group = cut(Age_Numeric, 
+                         breaks = c(0, 20, 25, 30, 35, 100),
+                         labels = c("<20", "20-25", "26-30", "31-35", "35+"))) %>%
+  group_by(Age_Group) %>%
+  summarize(
+    Count = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    Current_Payer_Rate = mean(Current_Payment == "Yes", na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Retention_Rate))
+
+print(age_analysis)
+cat("\n")
+
+cat("=== HIGH-RISK SEGMENTS (Retention < 40%) ===\n")
+high_risk_segments <- df %>%
+  group_by(Current_Payment, Music_Commodity_View, Leisure_Budget) %>%
+  summarize(
+    Segment_Size = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    .groups = 'drop'
+  ) %>%
+  filter(Retention_Rate < 0.4, Segment_Size >= 2) %>%
+  arrange(Retention_Rate)
+
+print(high_risk_segments)
+cat("\n")
+
+cat("=== HIGH-VALUE SEGMENTS (Retention > 60%) ===\n")
+high_value_segments <- df %>%
+  group_by(Current_Payment, Music_Commodity_View, Leisure_Budget) %>%
+  summarize(
+    Segment_Size = n(),
+    Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+    .groups = 'drop'
+  ) %>%
+  filter(Retention_Rate > 0.6, Segment_Size >= 2) %>%
+  arrange(desc(Retention_Rate))
+
+print(high_value_segments)
+cat("\n")
+
+make_final_spotify_decision <- function(df, current_subscribers = 17, current_price = 119, new_price = 199) {
+  retention_rate <- mean(df$Willingness_To_Pay %in% c("3", "4"), na.rm = TRUE)
+  
+  current_revenue <- current_subscribers * current_price
+  projected_subscribers <- current_subscribers * retention_rate
+  projected_revenue <- projected_subscribers * new_price
+  revenue_change <- projected_revenue - current_revenue
+  revenue_change_pct <- ifelse(current_revenue > 0, (revenue_change / current_revenue) * 100, NA)
+  
+  high_risk_segments <- df %>%
+    group_by(Current_Payment, Music_Commodity_View, Leisure_Budget) %>%
+    summarize(
+      Segment_Size = n(),
+      Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+      .groups = 'drop'
+    ) %>%
+    filter(Retention_Rate < 0.4, Segment_Size >= 2)
+  num_high_risk_segments <- nrow(high_risk_segments)
+  
+  high_value_segments <- df %>%
+    group_by(Current_Payment, Music_Commodity_View, Leisure_Budget) %>%
+    summarize(
+      Segment_Size = n(),
+      Retention_Rate = mean(Willingness_To_Pay %in% c("3", "4")),
+      .groups = 'drop'
+    ) %>%
+    filter(Retention_Rate > 0.6, Segment_Size >= 2)
+  num_high_value_segments <- nrow(high_value_segments)
+  
+  # Current payer retention
+  current_payers_retention <- mean(df$Willingness_To_Pay[df$Current_Payment == "Yes"] %in% c("3", "4"), na.rm = TRUE)
+  
+  # Decision logic
+  if (retention_rate >= 0.6 && revenue_change > 0 && num_high_risk_segments == 0) {
+    decision <- "Increase - Profitable, strong retention, and stable segments"
+    effectiveness <- "Highly effective: price increase recommended."
+  } else if (retention_rate >= 0.4 && revenue_change > 0 && num_high_risk_segments <= 2) {
+    decision <- "Increase - Profitable, but watch risky segments"
+    effectiveness <- "Moderately effective: acceptable but not optimal."
+  } else if (revenue_change > 0) {
+    decision <- "Increase - Profitable, but many risky segments"
+    effectiveness <- "Financially positive, but segment instability is a concern."
+  } else if (retention_rate >= 0.6) {
+    decision <- "Do not increase - retention strong, revenue falls"
+    effectiveness <- "Retention is strong, but lost revenue makes it unwise."
+  } else {
+    decision <- "Do not increase - revenue falls, retention low, instability"
+    effectiveness <- "Not effective: would harm retention and risk segments."
+  }
+  
+  cat("\n========== FINAL BUSINESS DECISION SUMMARY ==========\n")
+  cat("Overall Retention Rate:", round(retention_rate*100,1), "%\n")
+  cat("Current Revenue: ₹", current_revenue, "\n")
+  cat("Projected Revenue: ₹", round(projected_revenue), "\n")
+  cat("Revenue Change: ₹", round(revenue_change), " (", round(revenue_change_pct, 1), "%)\n")
+  cat("Number of High-Risk Segments (<40% retention):", num_high_risk_segments, "\n")
+  cat("Number of High-Value Segments (>60% retention):", num_high_value_segments, "\n")
+  cat("Current Payer Retention (willing at new price):", round(current_payers_retention*100,1), "%\n")
+  cat("--- DECISION ---\n", decision, "\n", effectiveness, "\n")
+  cat("====================================================\n")
+  
+  list(
+    retention_rate = retention_rate,
+    current_revenue = current_revenue,
+    projected_revenue = projected_revenue,
+    revenue_change = revenue_change,
+    revenue_change_pct = revenue_change_pct,
+    num_high_risk_segments = num_high_risk_segments,
+    num_high_value_segments = num_high_value_segments,
+    current_payers_retention = current_payers_retention,
+    decision = decision,
+    effectiveness = effectiveness,
+    high_risk_segments = high_risk_segments,
+    high_value_segments = high_value_segments
+  )
+}
+final_business_results <- make_final_spotify_decision(df)
