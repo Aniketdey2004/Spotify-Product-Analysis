@@ -4,7 +4,7 @@ library(corrplot)
 library(plotly)
 library(tidyr)
 getwd()
-df<-read.csv("D:/rproject/Spotify-Product-Analysis/Spotify analysis/data.csv");
+df<-read.csv("/home/pikubha/r-projects/Spotify-Product-Analysis/Spotify analysis/data.csv");
 
 # Convert Age into factor with proper order
 df$Age <- factor(df$Age, 
@@ -169,13 +169,16 @@ View(df)
 
 cat("Encoding 'Influence.on.spending' column...\n")
 influence_col_name <- "What.influences.your.decision.to.spend.money.on.music.the.most."
-influence_factor <- as.factor(df_encoded[[influence_col_name]])
+influence_factor <- as.factor(df[[influence_col_name]])
 cat("--> Mapping for 'Influence.on.spending':\n")
 print(data.frame(Level = levels(influence_factor), Code = 1:length(levels(influence_factor))))
 df[[influence_col_name]] <- as.numeric(influence_factor)
 
 
 ### changed
+
+# Assuming 'my_dataset' is your encoded and transformed data frame
+write.csv(df, file = "output_dataset.csv", row.names = FALSE)
 
 unique(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
 df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world. <- factor(df$Do.you.think.music.is.a.public.or.private.commodity.in.today.s.digital.world.)
